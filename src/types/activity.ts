@@ -1,7 +1,4 @@
 
-import React from 'react';
-import { FiEdit3, FiMessageCircle, FiUsers, FiFileText } from 'react-icons/fi';
-
 export type User = {
   id: string;
   name: string;
@@ -37,25 +34,25 @@ export type Filter = {
   projects: string[];
 };
 
-export const activityTypeLabels: Record<ActivityType, { color: string; icon: React.ReactNode; label: string }> = {
+export const activityTypeLabels: Record<ActivityType, { color: string; iconName: string; label: string }> = {
   edit: {
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    icon: <FiEdit3 className="inline-block mr-1" />,
+    iconName: 'Edit3',
     label: 'Edit',
   },
   comment: {
     color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    icon: <FiMessageCircle className="inline-block mr-1" />,
+    iconName: 'MessageCircle',
     label: 'Comment',
   },
   mention: {
     color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    icon: <FiUsers className="inline-block mr-1" />,
+    iconName: 'Users',
     label: 'Mention',
   },
   upload: {
     color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    icon: <FiFileText className="inline-block mr-1" />,
+    iconName: 'FileText',
     label: 'File Upload',
   },
 };

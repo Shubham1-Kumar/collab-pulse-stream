@@ -1,27 +1,30 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  FiChevronLeft,
-  FiFilter,
-  FiUser,
-  FiFileText,
-  FiActivity,
-  FiUsers,
-  FiMenu,
-  FiX,
-  FiDownload,
-  FiMoon,
-  FiSun,
-} from 'react-icons/fi';
+  ChevronLeft,
+  Filter,
+  User,
+  FileText,
+  Activity,
+  Users,
+  Menu,
+  X,
+  Download,
+  Moon,
+  Sun,
+  Edit3,
+  MessageCircle,
+} from 'lucide-react';
 import { LandingPage } from '../components/LandingPage';
 import { ActivitySummaryChart } from '../components/ActivitySummaryChart';
 import { ActivityItem } from '../components/ActivityItem';
-import { User, Activity, ActivityType, Filter, activityTypeLabels } from '../types/activity';
+import { User as UserType, Activity as ActivityType, ActivityType as ActivityTypeEnum, Filter as FilterType, activityTypeLabels } from '../types/activity';
 import { exportActivities } from '../utils/helpers';
 
 // Mock data
-const users: User[] = [
+const users: UserType[] = [
   { id: 'u1', name: 'Alice', avatar: 'https://i.pravatar.cc/40?img=1', online: true, editing: true },
   { id: 'u2', name: 'Bob', avatar: 'https://i.pravatar.cc/40?img=2', online: true, editing: false },
   { id: 'u3', name: 'Carol', avatar: 'https://i.pravatar.cc/40?img=3', online: false, editing: false },
@@ -30,7 +33,7 @@ const users: User[] = [
 
 const fakeProjects = ['Design System', 'Docs', 'API', 'Marketing'];
 
-const initialActivities: Activity[] = [
+const initialActivities: ActivityType[] = [
   {
     id: 'a1',
     user: users[0],
@@ -77,6 +80,13 @@ const docSections = [
   { id: 'section-summary', label: 'Summary' },
 ];
 
+const iconMap = {
+  Edit3,
+  MessageCircle,
+  Users,
+  FileText,
+};
+
 const Index: React.FC = () => {
   const [showLanding, setShowLanding] = useState(() => {
     return localStorage.getItem('collabpulse-visited') !== 'true';
@@ -91,13 +101,13 @@ const Index: React.FC = () => {
   const [isResizing, setIsResizing] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   
-  const [filter, setFilter] = useState<Filter>(() => {
+  const [filter, setFilter] = useState<FilterType>(() => {
     const saved = localStorage.getItem('collabpulse-filters');
     return saved ? JSON.parse(saved) : { users: [], types: [], projects: [] };
   });
   
-  const [activities, setActivities] = useState<Activity[]>(initialActivities);
-  const [currentUsers, setCurrentUsers] = useState<User[]>(users);
+  const [activities, setActivities] = useState<ActivityType[]>(initialActivities);
+  const [currentUsers, setCurrentUsers] = useState<UserType[]>(users);
 
   // Theme effect
   useEffect(() => {
@@ -119,7 +129,7 @@ const Index: React.FC = () => {
     localStorage.setItem('collabpulse-visited', 'true');
   };
 
-  const toggleFilter = (key: keyof Filter, value: string) => {
+  const toggleFilter = (key: keyof FilterType, value: string) => {
     setFilter((prev) => {
       const currentArray = prev[key] as string[];
       if (currentArray.includes(value)) {
@@ -133,7 +143,7 @@ const Index: React.FC = () => {
     setFilter({ users: [], types: [], projects: [] });
   };
 
-  const handleBarClick = (type: ActivityType) => {
+  const handleBarClick = (type: ActivityTypeEnum) => {
     toggleFilter('types', type);
   };
 
@@ -184,25 +194,24 @@ const Index: React.FC = () => {
         }`}
         style={{ width: isMobileSidebarOpen ? 320 : sidebarWidth, minWidth: 220, maxWidth: 480 }}
       >
-        {/* ... keep existing sidebar content but simplified */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <div className="flex items-center gap-2 font-semibold text-lg">
-            <FiFilter className="text-blue-600" /> Filter
+            <Filter className="text-blue-600 w-5 h-5" /> Filter
           </div>
           <button
             className="lg:hidden p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
             onClick={() => setIsMobileSidebarOpen(false)}
           >
-            <FiX className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Filters section - simplified */}
+        {/* Filters section */}
         <div className="flex-1 overflow-y-auto">
           {/* Users filter */}
           <div className="p-4 border-b dark:border-gray-700">
             <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mb-2">
-              <FiUser /> Team
+              <User className="w-3 h-3" /> Team
             </div>
             <div className="flex flex-wrap gap-2">
               {users.map((u) => (
@@ -219,6 +228,32 @@ const Index: React.FC = () => {
                   {u.name}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Type filter */}
+          <div className="p-4 border-b dark:border-gray-700">
+            <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mb-2">
+              <Activity className="w-3 h-3" /> Type
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(['edit', 'comment', 'mention', 'upload'] as ActivityTypeEnum[]).map((type) => {
+                const IconComponent = iconMap[activityTypeLabels[type].iconName as keyof typeof iconMap];
+                return (
+                  <button
+                    key={type}
+                    className={`px-2 py-1 rounded-full text-xs transition border flex items-center gap-1 ${
+                      filter.types.includes(type)
+                        ? `${activityTypeLabels[type].color} border-blue-400`
+                        : 'bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-gray-400'
+                    }`}
+                    onClick={() => toggleFilter('types', type)}
+                  >
+                    <IconComponent className="w-3 h-3" />
+                    {activityTypeLabels[type].label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -244,11 +279,11 @@ const Index: React.FC = () => {
             className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded mr-2"
             onClick={() => setIsMobileSidebarOpen(true)}
           >
-            <FiMenu className="w-5 h-5" />
+            <Menu className="w-5 h-5" />
           </button>
           
           <div className="font-bold text-xl flex items-center gap-2">
-            <FiActivity className="text-blue-600" />
+            <Activity className="text-blue-600 w-6 h-6" />
             <span className="hidden sm:inline">Workspace Activity</span>
           </div>
           
@@ -257,7 +292,7 @@ const Index: React.FC = () => {
               onClick={() => exportActivities(filteredActivities)}
               className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition"
             >
-              <FiDownload className="w-4 h-4" />
+              <Download className="w-4 h-4" />
               Export
             </button>
             
@@ -266,7 +301,7 @@ const Index: React.FC = () => {
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {isDark ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
           </div>
         </div>

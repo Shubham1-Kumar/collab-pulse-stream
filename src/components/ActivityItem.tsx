@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FiArrowDown } from 'react-icons/fi';
+import { ArrowDown, Edit3, MessageCircle, Users, FileText } from 'lucide-react';
 import { Activity, activityTypeLabels } from '../types/activity';
 import { getTimeAgo, scrollToSection, highlightMentions } from '../utils/helpers';
 
@@ -9,8 +9,16 @@ interface ActivityItemProps {
   onReactionAdd: (activityId: string, emoji: string) => void;
 }
 
+const iconMap = {
+  Edit3,
+  MessageCircle,
+  Users,
+  FileText,
+};
+
 export const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onReactionAdd }) => {
   const reactions = ['👍', '❤️', '😊'];
+  const IconComponent = iconMap[activityTypeLabels[activity.type].iconName as keyof typeof iconMap];
 
   return (
     <li className="bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-sm rounded-lg p-4 flex items-start gap-4 group hover:shadow-md transition-all animate-fade-in">
@@ -23,7 +31,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onReaction
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-gray-900 dark:text-white">{activity.user.name}</span>
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activityTypeLabels[activity.type].color}`}>
-            {activityTypeLabels[activity.type].icon}
+            <IconComponent className="inline-block mr-1 w-3 h-3" />
             {activityTypeLabels[activity.type].label}
           </span>
           <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">{getTimeAgo(activity.timestamp)}</span>
@@ -81,7 +89,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onReaction
               className="text-xs text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition"
               onClick={() => scrollToSection(activity.targetSectionId!)}
             >
-              <FiArrowDown /> Click to jump
+              <ArrowDown className="w-3 h-3" /> Click to jump
             </button>
           )}
         </div>
